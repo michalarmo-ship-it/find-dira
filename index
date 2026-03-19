@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>חיפוש דירות בישראל</title>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      direction: rtl;
+    }
+    form {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    label, input, select {
+      display: block;
+      margin-bottom: 10px;
+    }
+    button {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>חיפוש דירות בישראל</h1>
+  
+  <form>
+    <label for="location">מיקום:</label>
+    <input type="text" id="location" name="location">
+    
+    <label for="minPrice">מחיר מינימלי:</label>
+    <input type="number" id="minPrice" name="minPrice">
+
+    <label for="maxPrice">מחיר מקסימלי:</label>
+    <input type="number" id="maxPrice" name="maxPrice">
+
+    <label for="rooms">מספר חדרים:</label>
+    <input type="number" id="rooms" name="rooms">
+
+    <label for="floor">קומה:</label>
+    <input type="number" id="floor" name="floor">
+
+    <label for="mamad">ממ"ד:</label>
+    <select id="mamad" name="mamad">
+      <option value="">לא משנה</option>
+      <option value="yes">כן</option>
+      <option value="no">לא</option>
+    </select>
+
+    <label for="lightRail">קרבה לרכבת קלה:</label>
+    <select id="lightRail" name="lightRail">
+      <option value="">לא משנה</option> 
+      <option value="yes">כן</option>
+      <option value="no">לא</option>
+    </select>
+
+    <label for="garden">גינה:</label>
+    <select id="garden" name="garden">
+      <option value="">לא משנה</option>
+      <option value="yes">כן</option>  
+      <option value="no">לא</option>
+    </select>
+    
+    <button type="submit">חיפוש</button>
+  </form>
+
+  <div id="results"></div>
+
+  <script>
+    const form = document.querySelector('form');
+    const resultsDiv = document.getElementById('results');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const formData = new FormData(form);
+      const searchParams = new URLSearchParams(formData);
+      
+      const response = await fetch(`/apartments?${searchParams}`);
+      const apartments = await response.json();
+
+      let html = '';
+      for (const apt of apartments) {
+        html += `
+          <h2>${apt.title}</h2>
+          <p>מחיר: ${apt.price}</p>
+          <p>חדרים: ${apt.rooms}</p>
+          <p>קומה: ${apt.floor}</p>
+          <p>ממ"ד: ${apt.mamad ? 'יש' : 'אין'}</p>
+          <p>קרוב לרכבת קלה: ${apt.nearLightRail ? 'כן' : 'לא'}</p>
+          <p>גינה: ${apt.garden ? 'יש' : 'אין'}</p>
+          <a href="${apt.link}" target="_blank">פרטים נוספים</a>
+          <hr>
+        `;
+      }
+      resultsDiv.innerHTML = html;
+    });
+  </script>
+</body>
+</html>
